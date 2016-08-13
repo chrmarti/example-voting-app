@@ -4,10 +4,8 @@ services:
   vote:
     build: ./vote
     command: python app.py
-    volumes:
-     - ./vote:/app
     ports:
-      - "5000:80"
+      - "80:80"
 
   redis:
     image: redis:alpine
@@ -21,9 +19,5 @@ services:
 
   result:
     build: ./result
-    command: nodemon --debug server.js
-    volumes:
-      - ./result:/app
     ports:
-      - "5001:80"
-      - "5858:5858"
+      - "8080:80"
