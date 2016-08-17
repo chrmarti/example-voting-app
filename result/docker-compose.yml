@@ -1,0 +1,26 @@
+version: "2"
+
+# Debugging 'result' locally while being connected to the db on Azure
+
+# 1. Replace ip and hostname below with your own
+# 2. docker-compose up -d
+# 3. Add private key to ssh-agent (if protected by a passphrase):
+#   - docker-compose exec db sh -c 'source ssh-agent-config.sh; ssh-add ~/.ssh/id_rsa'
+
+services:
+  db:
+    image: iadknet/ssh-client-light
+    entrypoint: sh -c 'eval `ssh-agent | tee ssh-agent-config.sh`; while true; do ssh -L \\*:5432:10.0.0.4:5432 -N azureuser@chrmarti-testmgmt.westus.cloudapp.azure.com -p 2200; sleep 10; done'
+    volumes:
+      - ~/.ssh:/root/.ssh
+    expose:
+      - "5432"
+
+  result:
+    build: .
+    command: nodemon --debug server.js
+    volumes:
+      - .:/app
+    ports:
+      - "5001:80"
+      - "5858:5858"
